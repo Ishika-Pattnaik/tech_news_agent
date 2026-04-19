@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Frontend for Tech News AI Summarization API",
   "main": "src/App.jsx",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
