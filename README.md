@@ -4,6 +4,7 @@ A production-ready API that provides latest tech news updates using Tavily web s
 
 ## Quick Start
 
+### Backend Setup
 1. Install dependencies:
    ```bash
    pip install -r requirements.txt
@@ -18,6 +19,35 @@ A production-ready API that provides latest tech news updates using Tavily web s
    ```bash
    python -m app.main
    ```
+
+### Frontend Setup
+1. Navigate to frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the React development server:
+   ```bash
+   npm start
+   ```
+
+4. Open `http://localhost:3000` in your browser
+
+### Complete Development Setup
+```bash
+# Terminal 1 - Backend
+cd /path/to/tech_news_agent
+python -m app.main
+
+# Terminal 2 - Frontend
+cd /path/to/tech_news_agent/frontend
+npm start
+```
 
 ## API Usage
 
@@ -45,44 +75,47 @@ curl "http://localhost:8000/health"
 ## Features
 
 - **🚀 Production-ready API** with FastAPI
+- **⚛️ Modern React frontend** with dark theme UI
 - **🔍 Real-time tech news search** via Tavily API
 - **🤖 AI-powered summarization** using Mistral AI
 - **⚡ In-memory caching** to reduce API costs
 - **🛡️ Rate limiting** to prevent abuse
 - **📝 Comprehensive logging** for monitoring
 - **🔧 Modular architecture** for easy extension
-- **📦 Deployment ready** with Docker/Render support
+- **� Markdown rendering** for formatted AI responses
 
 ## Architecture
 
 ```
-app/
-├── main.py              # FastAPI entrypoint
-├── config/
-│   └── settings.py      # Configuration management
-├── tools/
-│   ├── tavily.py        # Tavily search logic
-│   └── mistral.py       # Mistral AI logic
-└── services/
-    └── agent.py         # Pipeline orchestration
+tech_news_agent/
+├── app/                  # FastAPI backend
+│   ├── main.py          # FastAPI entrypoint
+│   ├── config/
+│   │   └── settings.py  # Configuration management
+│   ├── tools/
+│   │   ├── tavily.py    # Tavily search logic
+│   │   └── mistral.py   # Mistral AI logic
+│   └── services/
+│       └── agent.py      # Pipeline orchestration
+└── frontend/            # React frontend
+    ├── src/
+    │   ├── components/   # React components
+    │   └── App.jsx      # Main app component
+    └── public/          # Static assets
 ```
 
 ## Pipeline
 
-1. **Query Processing**: User query received via API
-2. **Tavily Search**: Fetches latest tech news from web sources
-3. **Content Formatting**: Structures results for AI processing
-4. **Mistral Summarization**: Analyzes and summarizes the news
-5. **Response**: Returns JSON with summary and metadata
+1. **User Query**: User enters query in React frontend
+2. **API Request**: Frontend sends request to backend API
+3. **Tavily Search**: Fetches latest tech news from web sources
+4. **Content Formatting**: Structures results for AI processing
+5. **Mistral Summarization**: Analyzes and summarizes the news
+6. **Response**: Returns JSON with formatted summary and metadata
+7. **Frontend Display**: React renders markdown-formatted response
 
-## Deployment
+## Access Points
 
-See [README_DEPLOYMENT.md](./README_DEPLOYMENT.md) for detailed deployment instructions including:
-- Local development setup
-- Render deployment
-- Docker deployment
-- Production configuration
-
-## Legacy CLI Version
-
-The original CLI version is preserved as `tech_news_agent.py` for reference.
+- **Frontend UI**: `http://localhost:3000` - Dark themed React interface
+- **Backend API**: `http://localhost:8000` - FastAPI with interactive docs
+- **API Documentation**: `http://localhost:8000/docs` - Swagger UI
