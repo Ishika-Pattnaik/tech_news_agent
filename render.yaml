@@ -1,0 +1,35 @@
+services:
+  # Backend API Service
+  - type: web
+    name: tech-news-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: PORT
+        value: 8000
+
+  # Frontend Service
+  - type: web
+    name: tech-news-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    publishPath: frontend/build
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://tech-news-api.onrender.com/*
+      - type: file
+        source: /**
+        destination: /index.html
