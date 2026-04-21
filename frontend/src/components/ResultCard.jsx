@@ -1,5 +1,20 @@
 import React from 'react';
 
+const parseMarkdown = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  
+  // Convert **bold** to <strong>
+  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // Convert *italic* to <em>
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  
+  // Convert newlines to <br>
+  html = html.replace(/\n/g, '<br>');
+  
+  return html;
+};
+
 const ResultCard = ({ data, isLoading, error }) => {
   if (isLoading) {
     return (
@@ -39,7 +54,11 @@ const ResultCard = ({ data, isLoading, error }) => {
       <div className="result-content">
         <div className="summary-section">
           <h3>Summary</h3>
-          <p className="summary-text">{data.summary}</p>
+          <div className="summary-text">
+            <div dangerouslySetInnerHTML={{ 
+              __html: parseMarkdown(data.summary || 'No summary available') 
+            }} />
+          </div>
         </div>
         
         {data.sources && data.sources.length > 0 && (
