@@ -3,7 +3,7 @@ import SearchBar from './components/SearchBar';
 import ResultCard from './components/ResultCard';
 import './styles.css';
 
-const API_BASE_URL = 'https://tech-news-agent-ofj9.onrender.com';
+const API_BASE_URL = 'http://localhost:8000';
 
 function App() {
   const [result, setResult] = useState(null);
