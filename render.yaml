@@ -15,3 +15,17 @@ services:
         sync: false
       - key: PORT
         value: 8000
+
+  # Frontend Service
+  - type: web
+    name: tech-news-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/build
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://tech-news-api.onrender.com
+      - type: file
+        source: /*
+        destination: /index.html

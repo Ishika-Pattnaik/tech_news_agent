@@ -12,7 +12,7 @@ class TechNewsAgent:
         self.tavily_tool = TavilyTool(tavily_api_key)
         self.mistral_tool = MistralTool(mistral_api_key)
     
-    async def process_query(self, query: str) -> Dict:
+    async def process_query(self, query: str, reading_mode: str = "brief") -> Dict:
         """
         Process a tech news query through the complete pipeline:
         Tavily search → format results → Mistral summarization
@@ -36,12 +36,13 @@ class TechNewsAgent:
             formatted_content = self.tavily_tool.format_results(search_results)
             
             # Step 3: Summarize using Mistral
-            summary = await self.mistral_tool.summarize_news(query, formatted_content)
+            summary = await self.mistral_tool.summarize_news(query, formatted_content, reading_mode)
             
             result = {
                 "query": query,
                 "summary": summary,
                 "sources_count": len(search_results.get('results', [])),
+                "reading_mode": reading_mode,
                 "success": True
             }
             

@@ -33,7 +33,7 @@ class TavilyTool:
     def __init__(self, api_key: str):
         self.client = TavilyClient(api_key=api_key)
     
-    async def search_tech_news(self, query: str, max_results: int = 5) -> Dict:
+    async def search_tech_news(self, query: str, max_results: int = 5, include_images: bool = False) -> Dict:
         """
         Search for latest tech news using Tavily API.
         
@@ -48,18 +48,22 @@ class TavilyTool:
             Exception: If API call fails
         """
         try:
-            search_query = f"latest tech news {query}"
+            search_query = f"{query}"
             logger.info(f"Searching Tavily for: {search_query}")
             
             # Run the synchronous Tavily call in an executor
             loop = asyncio.get_event_loop()
+            search_params = {
+                "query": search_query, 
+                "search_depth": "basic", 
+                "max_results": max_results
+            }
+            if include_images:
+                search_params["include_images"] = True
+                
             result = await loop.run_in_executor(
                 None, 
-                lambda: self.client.search(
-                    query=search_query, 
-                    search_depth="basic", 
-                    max_results=max_results
-                )
+                lambda: self.client.search(**search_params)
             )
             
             logger.info(f"Tavily returned {len(result.get('results', []))} results")

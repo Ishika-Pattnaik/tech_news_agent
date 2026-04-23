@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const SearchBar = ({ onSearch, isLoading }) => {
-  const [query, setQuery] = useState('');
+const SearchBar = ({ onSearch, isLoading, query, setQuery }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,15 +16,15 @@ const SearchBar = ({ onSearch, isLoading }) => {
   };
 
   return (
-    <div className="search-container">
+    <div className="search-container hero-search">
       <form onSubmit={handleSubmit} className="search-form">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Search latest AI, startups, or tech developments..."
-          className="search-input"
+          placeholder="Ask anything about latest tech news..."
+          className={`search-input ${isLoading ? 'loading' : ''}`}
           disabled={isLoading}
         />
         <button

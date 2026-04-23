@@ -74,9 +74,9 @@ def check_rate_limit(ip: str) -> bool:
     rate_limits[ip]["count"] += 1
     return True
 
-def get_cache_key(query: str) -> str:
-    """Generate cache key for query."""
-    return f"query_{hash(query.lower().strip())}"
+def get_cache_key(query: str, reading_mode: str = "brief") -> str:
+    """Generate cache key for query and reading mode."""
+    return f"query_{hash(query.lower().strip())}_{reading_mode}"
 
 def is_cache_valid(timestamp: float) -> bool:
     """Check if cache entry is still valid."""
@@ -97,7 +97,8 @@ async def root():
 @app.get("/summarize")
 async def summarize_news(
     request: Request,
-    query: str = Query(..., min_length=1, max_length=500, description="Tech news query to summarize")
+    query: str = Query(..., min_length=1, max_length=500, description="Tech news query to summarize"),
+    reading_mode: str = Query("brief", description="Reading mode: brief, explained, or critical")
 ):
     """
     Summarize latest tech news based on query.
@@ -117,16 +118,16 @@ async def summarize_news(
             )
         
         # Check cache
-        cache_key = get_cache_key(query)
+        cache_key = get_cache_key(query, reading_mode)
         if cache_key in cache and is_cache_valid(cache[cache_key]["timestamp"]):
-            logger.info(f"Cache hit for query: {query}")
+            logger.info(f"Cache hit for query: {query} with reading_mode: {reading_mode}")
             cached_result = cache[cache_key]["data"]
             cached_result["cached"] = True
             return cached_result
         
         # Process query
-        logger.info(f"Processing query from IP {client_ip}: {query}")
-        result = await agent.process_query(query)
+        logger.info(f"Processing query from IP {client_ip}: {query} (mode: {reading_mode})")
+        result = await agent.process_query(query, reading_mode)
         
         # Cache successful results
         if result.get("success"):
@@ -152,6 +153,146 @@ async def summarize_news(
         raise HTTPException(
             status_code=500,
             detail="Internal server error occurred while processing your request"
+        )
+
+def classify_category(query: str) -> str:
+    """Classify tech news category based on search query."""
+    if "AI" in query or "artificial intelligence" in query or "machine learning" in query:
+        return "AI"
+    elif "gadget" in query or "smartphone" in query or "tablet" in query or "consumer electronics" in query:
+        return "GADGETS"
+    elif "startup" in query or "venture" in query or "funding" in query:
+        return "STARTUPS"
+    elif "cybersecurity" in query or "security" in query or "hacking" in query:
+        return "CYBERSECURITY"
+    elif "electric vehicle" in query or "Tesla" in query or "automotive" in query:
+        return "EV"
+    elif "space" in query or "SpaceX" in query or "rocket" in query or "satellite" in query:
+        return "SPACE"
+    else:
+        return "TECH"
+
+def extract_source_name(url: str) -> str:
+    """Extract source name from URL."""
+    if "reuters.com" in url:
+        return "Reuters"
+    elif "techcrunch.com" in url:
+        return "TechCrunch"
+    elif "theverge.com" in url:
+        return "The Verge"
+    elif "cnbc.com" in url:
+        return "CNBC"
+    elif "engadget.com" in url:
+        return "Engadget"
+    elif "geekwire.com" in url:
+        return "GeekWire"
+    elif "bloomberg.com" in url:
+        return "Bloomberg"
+    elif "wsj.com" in url:
+        return "WSJ"
+    elif "nytimes.com" in url:
+        return "NYT"
+    elif "washingtonpost.com" in url:
+        return "WaPo"
+    elif "bbc.com" in url:
+        return "BBC"
+    elif "cnn.com" in url:
+        return "CNN"
+    else:
+        return "Tech News"
+
+def classify_category_from_content(content: str) -> str:
+    """Classify tech news category based on content."""
+    content_lower = content.lower()
+    if any(term in content_lower for term in ["ai", "artificial intelligence", "machine learning", "chatgpt", "openai"]):
+        return "AI"
+    elif any(term in content_lower for term in ["gadget", "smartphone", "tablet", "iphone", "android", "consumer electronics"]):
+        return "GADGETS"
+    elif any(term in content_lower for term in ["startup", "venture", "funding", "investment", "ipo"]):
+        return "STARTUPS"
+    elif any(term in content_lower for term in ["cybersecurity", "security", "hacking", "breach", "malware"]):
+        return "CYBERSECURITY"
+    elif any(term in content_lower for term in ["electric vehicle", "tesla", "automotive", "car", "ev"]):
+        return "EV"
+    elif any(term in content_lower for term in ["space", "spacex", "rocket", "satellite", "nasa"]):
+        return "SPACE"
+    else:
+        return "TECH"
+
+@app.get("/api/trending")
+async def get_trending_news():
+    """
+    Get latest trending tech news.
+    
+    Returns JSON array of up to 4 trending tech news articles.
+    """
+    try:
+        logger.info("Fetching trending tech news")
+        
+        # Search for latest trending tech news from all sources
+        try:
+            # Get trending tech news from all sources, not limited to specific sites
+            search_results = await agent.tavily_tool.search_tech_news(
+                "latest trending technology news today breaking", 
+                max_results=8,  # Get more results to choose from
+                include_images=True
+            )
+            
+            # Filter and enhance results
+            all_news = []
+            for result in search_results.get('results', []):
+                # Skip generic homepage results
+                if result.get('title') and len(result.get('title', '')) > 20:
+                    # Generate proper headline from content
+                    headline = await agent.mistral_tool.generate_headline(
+                        result.get('title', ''), 
+                        result.get('content', '')
+                    )
+                    
+                    result['category'] = classify_category_from_content(result.get('title', '') + ' ' + result.get('content', ''))
+                    result['headline'] = headline
+                    all_news.append(result)
+            
+            # Take top 6 most relevant stories
+            search_results = {'results': all_news[:6]}
+            
+        except Exception as e:
+            logger.error(f"Failed to fetch trending news: {str(e)}")
+            # Fallback to basic search
+            search_results = await agent.tavily_tool.search_tech_news(
+                "technology news", 
+                max_results=6,
+                include_images=True
+            )
+        
+        # Format the results
+        trending_news = []
+        for result in search_results.get('results', [])[:6]:  # Show up to 6 stories
+            # Extract source name from URL
+            source_name = extract_source_name(result.get('url', ''))
+            
+            # Use generated headline if available, otherwise use title
+            display_title = result.get('headline', result.get('title', ''))
+            
+            trending_news.append({
+                "title": display_title,  # Use generated headline
+                "original_title": result.get('title', ''),  # Keep original for reference
+                "snippet": result.get('content', ''),
+                "source": source_name,
+                "url": result.get('url', ''),
+                "image": result.get('image', None),
+                "category": result.get('category', 'TECH'),
+                "published_date": "Today"  # Could be enhanced with real date parsing
+            })
+        
+        logger.info(f"Successfully fetched {len(trending_news)} trending news articles")
+        return trending_news
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch trending news: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch trending news"
         )
 
 @app.get("/health")
