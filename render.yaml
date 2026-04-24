@@ -25,7 +25,7 @@ services:
     routes:
       - type: rewrite
         source: /api/*
-        destination: https://tech-news-api.onrender.com
+        destination: https://tech-news-api.onrender.com/api/*
       - type: file
         source: /*
         destination: /index.html
