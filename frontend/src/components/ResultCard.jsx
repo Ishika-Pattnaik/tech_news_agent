@@ -1,10 +1,32 @@
 import React from 'react';
 
+const cleanResponse = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  
+  // Remove lines that are just dashes or separators
+  let cleaned = text
+    .split('\n')
+    .filter(line => !line.trim().match(/^[-—\s]*$/))
+    .filter(line => !line.trim().match(/^[—\-]{3,}$/))
+    .join('\n');
+  
+  // Remove bullet point dashes at line start
+  cleaned = cleaned.replace(/^[\s]*-\s/gm, '');
+  
+  // Clean up extra spacing
+  cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+  
+  return cleaned.trim();
+};
+
 const parseMarkdown = (text) => {
   if (!text || typeof text !== 'string') return '';
   
+  // First clean the response
+  let cleaned = cleanResponse(text);
+  
   // Convert **bold** to <strong>
-  let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  let html = cleaned.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   
   // Convert *italic* to <em>
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
@@ -183,13 +205,22 @@ const ResultCard = ({ data, isLoading, error, readingMode, onFollowUpClick }) =>
           <div className="sources-section">
             <h3>Sources ({data.sources.length})</h3>
             <ul className="sources-list">
-              {data.sources.map((source, index) => (
-                <li key={index} className="source-item">
-                  <a href={source.url} target="_blank" rel="noopener noreferrer">
-                    {source.title || source.url}
-                  </a>
-                </li>
-              ))}
+              {data.sources.map((source, index) => {
+                let sourceName = 'Unknown Source';
+                try {
+                  sourceName = new URL(source.url).hostname.replace('www.', '');
+                } catch (e) {
+                  sourceName = source.title || 'Unknown Source';
+                }
+                
+                return (
+                  <li key={index} className="source-item">
+                    <a href={source.url} target="_blank" rel="noopener noreferrer">
+                      🔗 Read more on {sourceName}: {source.title || 'View Article'}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

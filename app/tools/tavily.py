@@ -48,7 +48,7 @@ class TavilyTool:
             Exception: If API call fails
         """
         try:
-            search_query = f"{query}"
+            search_query = f"{query} site:reuters.com OR site:bbc.com OR site:techcrunch.com OR site:theverge.com OR site:wired.com OR site:arstechnica.com OR site:bloomberg.com OR site:ft.com OR site:wsj.com OR site:nytimes.com OR site:theguardian.com OR site:forbes.com OR site:businessinsider.com OR site:zdnet.com OR site:cnet.com OR site:engadget.com OR site:venturebeat.com OR site:thenextweb.com OR site:mashable.com OR site:gizmodo.com OR site:fastcompany.com OR site:mit.edu OR site:nature.com OR site:newscientist.com OR site:apnews.com OR site:axios.com OR site:technologyreview.com OR site:scientificamerican.com OR site:ieee.org OR site:acm.org OR site:informationweek.com OR site:computerworld.com OR site:openai.com OR site:deepmind.google OR site:anthropic.com"
             logger.info(f"Searching Tavily for: {search_query}")
             
             # Run the synchronous Tavily call in an executor

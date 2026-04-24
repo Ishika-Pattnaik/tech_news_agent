@@ -94,6 +94,14 @@ const TrendingCard = ({ article, onCardClick, truncateSummary }) => {
     return `${readTime} min`;
   };
 
+  const getSourceName = (url) => {
+    try {
+      return new URL(url).hostname.replace('www.', '');
+    } catch (e) {
+      return article.source || 'Unknown Source';
+    }
+  };
+
   return (
     <div 
       className="trending-card"
@@ -104,7 +112,7 @@ const TrendingCard = ({ article, onCardClick, truncateSummary }) => {
           <span className={`trending-category ${article.category}`}>
             {article.category}
           </span>
-          <span className="trending-source">{article.source}</span>
+          <span className="trending-source">{getSourceName(article.url)}</span>
           <span className="trending-date">{article.published_date}</span>
           <span className="trending-read-time">
             {calculateReadTime(article.snippet)} read
@@ -112,6 +120,11 @@ const TrendingCard = ({ article, onCardClick, truncateSummary }) => {
         </div>
         <h3 className="trending-title">{article.title}</h3>
         <p className="trending-snippet">{truncateSummary(article.snippet)}</p>
+        <div className="trending-source-link">
+          <a href={article.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+            🔗 Read more on {getSourceName(article.url)}
+          </a>
+        </div>
       </div>
     </div>
   );
