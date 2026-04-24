@@ -514,9 +514,6 @@ body {
   opacity: 1;
 }
 
-.trending-content {
-  /* Content uses card padding */
-}
 
 .trending-meta {
   display: flex;
@@ -661,56 +658,133 @@ body {
     padding: 10px;
   }
   
+  .container {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+  
   .header {
     padding: 30px 20px 15px;
   }
   
   .header h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+  
+  .header p {
+    font-size: 0.9rem;
   }
   
   .main {
-    padding: 32px 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
+    padding: 20px;
   }
   
   .hero-section {
-    background: #18181b;
-    border: 1px solid #27272a;
-    border-radius: 8px;
-    padding: 24px;
-    margin-bottom: 100px;
-    position: relative;
+    margin-bottom: 20px;
   }
   
-  .hero-section:focus-within {
-    border-color: #3f3f46;
+  .search-form {
+    flex-direction: column;
+    gap: 12px;
   }
   
-  .secondary-section {
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
-  }
-  
-  .secondary-section:hover {
-    opacity: 1;
+  .search-input {
+    padding: 14px 16px;
+    font-size: 16px; /* Prevents zoom on iOS */
   }
   
   .search-button {
     width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    min-width: auto;
+  }
+  
+  .reading-mode-selector {
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-bottom: 16px;
+  }
+  
+  .mode-tab {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    min-width: 80px;
+  }
+  
+  .trending-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .trending-card {
+    padding: 16px;
+  }
+  
+  .trending-title {
+    font-size: 1rem;
+  }
+  
+  .trending-snippet {
+    font-size: 0.85rem;
   }
   
   .result-header {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
   
   .result-query {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
   
   .result-card {
     padding: 20px;
+  }
+  
+  .headline {
+    font-size: 1.25rem;
+  }
+  
+  .follow-up-chip {
+    font-size: 0.85rem;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 20px 16px 12px;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .main {
+    padding: 16px;
+  }
+  
+  .search-input {
+    padding: 12px 14px;
+  }
+  
+  .search-button {
+    padding: 12px 16px;
+  }
+  
+  .mode-tab {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+  
+  .result-card {
+    padding: 16px;
+  }
+  
+  .trending-card {
+    padding: 12px;
   }
 }
