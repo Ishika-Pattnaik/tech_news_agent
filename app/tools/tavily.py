@@ -48,8 +48,7 @@ class TavilyTool:
             Exception: If API call fails
         """
         try:
-            domains = "site:techcrunch.com OR site:theverge.com OR site:wired.com OR site:arstechnica.com"
-            search_query = f"{query} {domains}"
+            search_query = query
             if len(search_query) > 400:
                 search_query = query[:400]
             

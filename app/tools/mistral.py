@@ -138,7 +138,7 @@ Headline:"""
 accurate, professional news summaries that feel like they belong in a top-tier 
 tech publication like The Verge, Wired, or TechCrunch.
 
-Only reference and cite information from reputable, established news organizations and research institutions. Do not cite unknown blogs, forums, or unverified sources.
+Always cite and reference information only from reputable established news organizations such as Reuters, BBC, TechCrunch, The Verge, Wired, Bloomberg, Financial Times, Ars Technica, MIT Technology Review, The Guardian, Forbes, AP News, and Axios. Do not reference unknown blogs, forums, or unverified sources.
 
 Use proper industry terminology and jargon — but every time you introduce a 
 technical term, weave a brief, natural explanation into the sentence itself 
