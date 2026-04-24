@@ -4,7 +4,9 @@ import ResultCard from './components/ResultCard';
 import TrendingNews from './components/TrendingNews';
 import './styles.css';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? '/api' 
+  : 'http://localhost:8000';
 
 function App() {
   const [result, setResult] = useState(null);
