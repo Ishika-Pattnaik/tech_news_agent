@@ -2,7 +2,7 @@ services:
   # Backend API Service
   - type: web
     name: tech-news-api
-    env: python
+    runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app.main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT
     healthCheckPath: /health
@@ -19,7 +19,7 @@ services:
   # Frontend Service
   - type: web
     name: tech-news-frontend
-    env: static
+    runtime: node
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/build
     routes:
