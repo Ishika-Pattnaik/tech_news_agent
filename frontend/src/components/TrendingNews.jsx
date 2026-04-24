@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 const TrendingNews = ({ onAskAboutArticle }) => {
   const [trendingNews, setTrendingNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -11,7 +13,7 @@ const TrendingNews = ({ onAskAboutArticle }) => {
         setIsLoading(true);
         setError(null);
         
-        const response = await fetch('http://localhost:8000/api/trending');
+        const response = await fetch(`${API_BASE}/api/trending`);
         if (!response.ok) {
           throw new Error(`Failed to fetch trending news: ${response.status}`);
         }

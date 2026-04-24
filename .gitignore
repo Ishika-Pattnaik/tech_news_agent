@@ -144,6 +144,14 @@ ENV/
 env.bak/
 venv.bak/
 
+# Frontend environment variables
+frontend/.env
+
+# Frontend build and dependencies
+frontend/build/
+frontend/node_modules/
+node_modules/
+
 # Spyder project settings
 .spyderproject
 .spyproject

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import time
 import logging
 from datetime import datetime, timedelta
@@ -26,9 +27,14 @@ app = FastAPI(
 )
 
 # Add CORS middleware
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    os.getenv("FRONTEND_URL", ""),
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

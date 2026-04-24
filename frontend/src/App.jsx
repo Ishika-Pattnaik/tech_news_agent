@@ -4,9 +4,7 @@ import ResultCard from './components/ResultCard';
 import TrendingNews from './components/TrendingNews';
 import './styles.css';
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/api' 
-  : 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 function App() {
   const [result, setResult] = useState(null);
@@ -27,7 +25,7 @@ function App() {
     setResult(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/summarize?query=${encodeURIComponent(searchQuery)}&reading_mode=${readingMode}`);
+      const response = await fetch(`${API_BASE}/summarize?query=${encodeURIComponent(searchQuery)}&reading_mode=${readingMode}`);
       
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
@@ -77,7 +75,7 @@ function App() {
     setError(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/summarize?query=${encodeURIComponent(searchQuery)}&reading_mode=${mode}`);
+      const response = await fetch(`${API_BASE}/summarize?query=${encodeURIComponent(searchQuery)}&reading_mode=${mode}`);
       
       if (!response.ok) {
         throw new Error(`API request failed: ${response.status}`);
