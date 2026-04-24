@@ -19,13 +19,55 @@ const ResultCard = ({ data, isLoading, error, readingMode, onFollowUpClick }) =>
   if (isLoading) {
     return (
       <div className="result-card loading">
-        <div className="loading-spinner"></div>
-        <p>Analyzing latest signals...</p>
+        <div className="skeleton-loader">
+          <div className="skeleton-line title"></div>
+          <div className="skeleton-line text"></div>
+          <div className="skeleton-line text"></div>
+          <div className="skeleton-line short"></div>
+          <div className="skeleton-line text"></div>
+          <div className="skeleton-line short"></div>
+        </div>
+        <p style={{ marginTop: '20px', color: '#71717a' }}>Analyzing latest signals...</p>
       </div>
     );
   }
 
   if (error) {
+    const isJsonError = error.includes('JSON') || error.includes('parse') || error.length < 50;
+    
+    if (isJsonError) {
+      return (
+        <div className="result-card error">
+          <div className="error-icon">!</div>
+          <h3>Try asking about a specific tech topic</h3>
+          <p>Try asking about a specific tech topic like AI, startups, or cybersecurity</p>
+          <div style={{ marginTop: '20px', display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button 
+              className="example-chip" 
+              onClick={() => onFollowUpClick && onFollowUpClick('Latest AI breakthroughs today')}
+              style={{ fontSize: '0.85rem', padding: '8px 16px' }}
+            >
+              Latest AI breakthroughs today
+            </button>
+            <button 
+              className="example-chip" 
+              onClick={() => onFollowUpClick && onFollowUpClick('What happened in Silicon Valley this week?')}
+              style={{ fontSize: '0.85rem', padding: '8px 16px' }}
+            >
+              Silicon Valley this week
+            </button>
+            <button 
+              className="example-chip" 
+              onClick={() => onFollowUpClick && onFollowUpClick('Explain the OpenAI vs Anthropic rivalry')}
+              style={{ fontSize: '0.85rem', padding: '8px 16px' }}
+            >
+              OpenAI vs Anthropic
+            </button>
+          </div>
+        </div>
+      );
+    }
+    
     return (
       <div className="result-card error">
         <div className="error-icon">!</div>

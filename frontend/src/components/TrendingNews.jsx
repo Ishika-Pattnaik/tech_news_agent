@@ -86,17 +86,12 @@ const TrendingNews = ({ onAskAboutArticle }) => {
 };
 
 const TrendingCard = ({ article, onCardClick, truncateSummary }) => {
-  const getCategoryColor = (category) => {
-    const colors = {
-      'AI': '#3b82f6',
-      'GADGETS': '#10b981', 
-      'STARTUPS': '#f59e0b',
-      'CYBERSECURITY': '#ef4444',
-      'EV': '#8b5cf6',
-      'SPACE': '#06b6d4',
-      'TECH': '#6b7280'
-    };
-    return colors[category] || '#6b7280';
+  const calculateReadTime = (text) => {
+    if (!text) return '1 min';
+    const wordsPerMinute = 200;
+    const wordCount = text.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / wordsPerMinute);
+    return `${readTime} min`;
   };
 
   return (
@@ -106,14 +101,14 @@ const TrendingCard = ({ article, onCardClick, truncateSummary }) => {
     >
       <div className="trending-content">
         <div className="trending-meta">
-          <span 
-            className="trending-category" 
-            style={{ backgroundColor: getCategoryColor(article.category) }}
-          >
+          <span className={`trending-category ${article.category}`}>
             {article.category}
           </span>
           <span className="trending-source">{article.source}</span>
           <span className="trending-date">{article.published_date}</span>
+          <span className="trending-read-time">
+            {calculateReadTime(article.snippet)} read
+          </span>
         </div>
         <h3 className="trending-title">{article.title}</h3>
         <p className="trending-snippet">{truncateSummary(article.snippet)}</p>

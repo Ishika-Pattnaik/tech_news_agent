@@ -1,6 +1,15 @@
 import React from 'react';
 
-const SearchBar = ({ onSearch, isLoading, query, setQuery }) => {
+const SearchBar = ({ 
+  onSearch, 
+  isLoading, 
+  query, 
+  setQuery, 
+  placeholder = "Ask anything about latest tech news...",
+  showClear = false,
+  onClear,
+  compact = false
+}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,18 +24,37 @@ const SearchBar = ({ onSearch, isLoading, query, setQuery }) => {
     }
   };
 
+  const handleClearClick = (e) => {
+    e.preventDefault();
+    if (onClear) {
+      onClear();
+    }
+  };
+
   return (
-    <div className="search-container hero-search">
+    <div className={`search-container ${compact ? 'compact' : 'hero-search'}`}>
       <form onSubmit={handleSubmit} className="search-form">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Ask anything about latest tech news..."
-          className={`search-input ${isLoading ? 'loading' : ''}`}
-          disabled={isLoading}
-        />
+        <div className="search-input-wrapper">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder={placeholder}
+            className={`search-input ${isLoading ? 'loading' : ''}`}
+            disabled={isLoading}
+          />
+          {showClear && (
+            <button
+              type="button"
+              onClick={handleClearClick}
+              className={`search-clear ${showClear ? 'visible' : ''}`}
+              aria-label="Clear search"
+            >
+              ×
+            </button>
+          )}
+        </div>
         <button
           type="submit"
           disabled={isLoading || !query.trim()}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import SearchBar from './components/SearchBar';
 import ResultCard from './components/ResultCard';
 import TrendingNews from './components/TrendingNews';
@@ -12,6 +12,52 @@ function App() {
   const [error, setError] = useState(null);
   const [readingMode, setReadingMode] = useState('brief');
   const [query, setQuery] = useState('');
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [showClearButton, setShowClearButton] = useState(false);
+  
+  const placeholders = [
+    "Ask about latest AI news...",
+    "What's happening in Silicon Valley?",
+    "Latest developments in quantum computing...",
+    "Explain the OpenAI vs Anthropic rivalry...",
+    "What happened in tech this week?",
+    "Latest startup funding rounds..."
+  ];
+  
+  const exampleQueries = [
+    "Latest AI breakthroughs today",
+    "What happened in Silicon Valley this week?",
+    "Explain the OpenAI vs Anthropic rivalry"
+  ];
+  
+  const scrollRef = useRef(null);
+
+  // Animated placeholder
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Scroll effects
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      setShowStickyHeader(scrollY > 100);
+      setShowBackToTop(scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Clear button visibility
+  useEffect(() => {
+    setShowClearButton(query.length > 0);
+  }, [query]);
 
   const readingModes = [
     { id: 'brief', label: '⚡ Brief', icon: '⚡' },
@@ -38,6 +84,26 @@ function App() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleClear = () => {
+    setQuery('');
+    setShowClearButton(false);
+  };
+
+  const handleExampleClick = (exampleQuery) => {
+    setQuery(exampleQuery);
+    // Auto-focus the input
+    setTimeout(() => {
+      const inputElement = document.querySelector('.search-input');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }, 100);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleFollowUpClick = (followUpQuestion) => {
@@ -92,33 +158,78 @@ function App() {
 
   return (
     <div className="app">
-      <div className="container">
-        <header className="header">
+      {/* Sticky Header */}
+      <div className={`sticky-header ${showStickyHeader ? 'visible' : ''}`}>
+        <div className="sticky-header-content">
           <h1>Techno AI</h1>
-          <p>Real-time AI-powered tech intelligence</p>
-        </header>
-
-        <main className="main">
-          <div className="hero-section">
-            <div className="reading-mode-selector">
-              {readingModes.map((mode) => (
-                <button
-                  key={mode.id}
-                  className={`mode-tab ${readingMode === mode.id ? 'active' : ''}`}
-                  onClick={() => handleReadingModeChange(mode.id)}
-                >
-                  {mode.label}
-                </button>
-              ))}
-            </div>
+          <div className="sticky-search">
             <SearchBar 
               onSearch={handleSearch} 
               isLoading={isLoading} 
               query={query}
               setQuery={setQuery}
+              placeholder={placeholders[placeholderIndex]}
+              showClear={showClearButton}
+              onClear={handleClear}
+              compact={true}
             />
           </div>
+        </div>
+      </div>
+
+      {/* Back to Top Button */}
+      <button 
+        className={`back-to-top ${showBackToTop ? 'visible' : ''}`}
+        onClick={scrollToTop}
+        aria-label="Back to top"
+      >
+        ↑
+      </button>
+
+      <div className="container">
+        <header className="header">
+          <h1>Techno AI</h1>
+          <p>Your AI agent for real-time tech news intelligence</p>
+        </header>
+
+        {/* Hero Section */}
+        <div className="hero-section">
+          <div className="example-chips">
+            {exampleQueries.map((example, index) => (
+              <button
+                key={index}
+                className="example-chip"
+                onClick={() => handleExampleClick(example)}
+              >
+                {example}
+              </button>
+            ))}
+          </div>
           
+          <div className="reading-mode-selector" data-active={readingModes.findIndex(m => m.id === readingMode)}>
+            {readingModes.map((mode) => (
+              <button
+                key={mode.id}
+                className={`mode-tab ${readingMode === mode.id ? 'active' : ''}`}
+                onClick={() => handleReadingModeChange(mode.id)}
+              >
+                {mode.label}
+              </button>
+            ))}
+          </div>
+          
+          <SearchBar 
+            onSearch={handleSearch} 
+            isLoading={isLoading} 
+            query={query}
+            setQuery={setQuery}
+            placeholder={placeholders[placeholderIndex]}
+            showClear={showClearButton}
+            onClear={handleClear}
+          />
+        </div>
+        
+        <main className="main">
           <div className="secondary-section">
             {!result && !isLoading && <TrendingNews onAskAboutArticle={handleAskAboutArticle} />}
             {(result || isLoading) && (
